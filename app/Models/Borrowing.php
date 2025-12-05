@@ -9,7 +9,7 @@ class Borrowing extends Model
     protected $fillable = [
         'user_id',
         'book_id',
-        'borrow_date',
+        'borrowed_at',
         'due_date',
         'actual_return_date',
         'status',
@@ -18,13 +18,13 @@ class Borrowing extends Model
     ];
 
     protected $casts = [
-        'borrow_date' => 'date',
+        'borrowed_at' => 'datetime',
         'due_date' => 'date',
         'actual_return_date' => 'date',
     ];
 
     // Relasi ke User (Member)
-    public function member()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }

@@ -625,7 +625,7 @@
         </ul>
         <div class="navbar-actions">
             <a href="/login" class="btn-login">Masuk</a>
-            <button class="btn-start">Coba Gratis</button>
+            <a href="/login" class="btn-start">Coba Gratis</a>  
         </div>
     </nav>
 
@@ -788,13 +788,8 @@
             <a href="#" class="btn-white">Demo Gratis</a>
         </div>
     </section>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        <p>&copy; 2025 PustakaOne. Semua hak cipta dilindungi. | <a href="#"
-                style="color: white; text-decoration: none;">Privasi</a> | <a href="#"
-                style="color: white; text-decoration: none;">Syarat Layanan</a></p>
-    </footer>
 </body>
+
+<x-footer/>
 
 </html>

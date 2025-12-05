@@ -14,202 +14,6 @@
         color: #333;
     }
 
-    /* ===== NAVBAR TOP ===== */
-    .navbar {
-        background: linear-gradient(135deg, #0C3B2E 0%, #1a5a48 100%);
-        box-shadow: 0 2px 12px rgba(12, 59, 46, 0.15);
-        padding: 1.2rem 5%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        transition: all 0.3s ease;
-        gap: 2rem;
-    }
-
-    .navbar-brand {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .navbar-brand span:first-child {
-        font-size: 1.5rem;
-    }
-
-    .navbar-brand .logo-text {
-        font-weight: 700;
-        font-size: 1.3rem;
-        color: white;
-        letter-spacing: -0.5px;
-    }
-
-    .navbar-links {
-        display: flex;
-        list-style: none;
-        gap: 3rem;
-        margin: 0;
-        flex: 1;
-    }
-
-    .navbar-links li a {
-        text-decoration: none;
-        color: white;
-        font-weight: 500;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        position: relative;
-        padding: 0.5rem 0;
-    }
-
-    .navbar-links li a:hover {
-        color: #FFBA00;
-    }
-
-    .navbar-links li a::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: #FFBA00;
-        transition: width 0.3s ease;
-    }
-
-    .navbar-links li a:hover::after {
-        width: 100%;
-    }
-
-    .search-box {
-        display: flex;
-        align-items: center;
-        background: white;
-        border: 2px solid #E0E0E0;
-        border-radius: 12px;
-        overflow: hidden;
-        flex: 1;
-        max-width: 450px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-    }
-
-    .search-box:focus-within {
-        border-color: #6D9773;
-        box-shadow: 0 6px 20px rgba(109, 151, 115, 0.2);
-    }
-
-    .search-box input {
-        border: none;
-        outline: none;
-        padding: 0.7rem 1rem;
-        width: 100%;
-        font-size: 0.9rem;
-        background: transparent;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .search-box input::placeholder {
-        color: #999;
-    }
-
-    .search-box button {
-        background: linear-gradient(135deg, #6D9773, #0C3B2E);
-        color: white;
-        border: none;
-        padding: 0.7rem 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-
-    .search-box button:hover {
-        transform: translateX(2px);
-    }
-
-    .navbar-actions {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .notification-icon {
-        position: relative;
-        font-size: 1.3rem;
-        cursor: pointer;
-        transition: 0.3s ease;
-        color: white;
-    }
-
-    .notification-icon:hover {
-        transform: scale(1.1);
-    }
-
-    .notification-badge {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        background: #FFBA00;
-        color: #0C3B2E;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        font-weight: bold;
-    }
-
-    .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        cursor: pointer;
-        transition: 0.3s ease;
-        padding: 0.5rem 0.8rem;
-        border-radius: 8px;
-    }
-
-    .user-profile:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .user-avatar {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #BB8A52, #FFBA00);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        font-weight: bold;
-        color: #0C3B2E;
-    }
-
-    .user-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.1rem;
-    }
-
-    .user-name {
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: white;
-    }
-
-    .user-role {
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.8);
-    }
-
     /* ===== CONTENT ===== */
     .content {
         padding: 2rem 5%;
@@ -233,45 +37,6 @@
     .page-subtitle {
         color: #666;
         font-size: 0.95rem;
-    }
-
-    /* ===== TABS ===== */
-    .tabs-container {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        border-bottom: 2px solid #E8EAED;
-    }
-
-    .tab-btn {
-        padding: 1rem 1.5rem;
-        background: none;
-        border: none;
-        color: #666;
-        font-weight: 600;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -2px;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .tab-btn:hover {
-        color: #0C3B2E;
-    }
-
-    .tab-btn.active {
-        color: #0C3B2E;
-        border-bottom-color: #6D9773;
-    }
-
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
     }
 
     /* ===== STATS ===== */
@@ -299,16 +64,20 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
-    .stat-card.waiting {
-        border-left-color: #BB8A52;
-    }
-
-    .stat-card.ready {
+    .stat-card.active {
         border-left-color: #6D9773;
     }
 
-    .stat-card.expired {
+    .stat-card.overdue {
         border-left-color: #E74C3C;
+    }
+
+    .stat-card.returned {
+        border-left-color: #3498DB;
+    }
+
+    .stat-card.total {
+        border-left-color: #BB8A52;
     }
 
     .stat-icon {
@@ -330,6 +99,47 @@
     .stat-label {
         color: #666;
         font-size: 0.9rem;
+    }
+
+    /* ===== TABS ===== */
+    .tabs-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #E8EAED;
+        overflow-x: auto;
+    }
+
+    .tab-btn {
+        padding: 1rem 1.5rem;
+        background: none;
+        border: none;
+        color: #666;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        font-family: 'Poppins', sans-serif;
+        white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+        color: #0C3B2E;
+    }
+
+    .tab-btn.active {
+        color: #0C3B2E;
+        border-bottom-color: #6D9773;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
     }
 
     /* ===== CARDS ===== */
@@ -356,25 +166,115 @@
         color: #0C3B2E;
     }
 
-    .btn-small {
+    /* ===== BORROWING CARDS (untuk member) ===== */
+    .borrowings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .borrowing-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .borrowing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .borrowing-book-cover {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #0C3B2E, #6D9773);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        overflow: hidden;
+    }
+
+    .borrowing-book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .borrowing-info {
+        padding: 1.5rem;
+    }
+
+    .borrowing-book-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0C3B2E;
+        margin-bottom: 0.5rem;
+    }
+
+    .borrowing-book-author {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .borrowing-dates {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: #F8F9FA;
+        border-radius: 8px;
+    }
+
+    .borrowing-date-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+    }
+
+    .borrowing-date-label {
+        color: #666;
+    }
+
+    .borrowing-date-value {
+        font-weight: 600;
+        color: #0C3B2E;
+    }
+
+    .borrowing-date-value.overdue {
+        color: #E74C3C;
+    }
+
+    .btn-return {
+        width: 100%;
         background: linear-gradient(135deg, #6D9773, #0C3B2E);
         color: white;
         border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-size: 0.85rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: 0.3s ease;
+        transition: all 0.3s ease;
         font-family: 'Poppins', sans-serif;
-        font-weight: 500;
     }
 
-    .btn-small:hover {
+    .btn-return:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(12, 59, 46, 0.2);
+        box-shadow: 0 4px 12px rgba(109, 151, 115, 0.3);
     }
 
-    /* ===== TABLE ===== */
+    .btn-return:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ===== TABLE (untuk admin) ===== */
     .table-container {
         overflow-x: auto;
     }
@@ -411,24 +311,24 @@
         font-weight: 600;
     }
 
-    .badge-waiting {
-        background: #FFF3CD;
-        color: #856404;
-    }
-
-    .badge-ready {
+    .badge-active {
         background: #D5F4E6;
         color: #27AE60;
     }
 
-    .badge-expired {
+    .badge-overdue {
         background: #FADBD8;
         color: #E74C3C;
     }
 
-    .badge-claimed {
+    .badge-returned {
         background: #D6EAF8;
-        color: #0C3B2E;
+        color: #3498DB;
+    }
+
+    .badge-requested {
+        background: #FFF3CD;
+        color: #856404;
     }
 
     /* ===== BUTTONS ===== */
@@ -443,40 +343,13 @@
         font-weight: 500;
     }
 
-    .btn-approve {
+    .btn-mark-returned {
         background: #D5F4E6;
         color: #27AE60;
     }
 
-    .btn-approve:hover {
+    .btn-mark-returned:hover {
         background: #A3E9C5;
-    }
-
-    .btn-reject {
-        background: #FADBD8;
-        color: #E74C3C;
-    }
-
-    .btn-reject:hover {
-        background: #F5B7B1;
-    }
-
-    .btn-mark-ready {
-        background: #D6EAF8;
-        color: #0C3B2E;
-    }
-
-    .btn-mark-ready:hover {
-        background: #AED6F1;
-    }
-
-    .btn-claim {
-        background: #E8F4F8;
-        color: #6D9773;
-    }
-
-    .btn-claim:hover {
-        background: #D0E8F2;
     }
 
     /* ===== EMPTY STATE ===== */
@@ -496,15 +369,35 @@
         margin-bottom: 0.5rem;
     }
 
+    .empty-state-action {
+        margin-top: 1.5rem;
+    }
+
+    .btn-browse {
+        background: linear-gradient(135deg, #BB8A52, #6D9773);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-browse:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(109, 151, 115, 0.3);
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
         .navbar {
             gap: 1rem;
             flex-wrap: wrap;
-        }
-
-        .navbar-links {
-            display: none;
         }
 
         .search-box {
@@ -524,6 +417,10 @@
             grid-template-columns: 1fr;
         }
 
+        .borrowings-grid {
+            grid-template-columns: 1fr;
+        }
+
         .card-header {
             flex-direction: column;
             align-items: flex-start;
@@ -537,283 +434,514 @@
         td, th {
             padding: 0.75rem 0.5rem;
         }
+
+        .tabs-container {
+            flex-wrap: nowrap;
+            overflow-x: scroll;
+        }
     }
 </style>
 
 <!-- NAVBAR -->
-<div class="navbar">
-    <a href="{{ route(name: 'dashboard') }}" class="navbar-brand">
-        <span>📚</span>
-        <span class="logo-text">PustakaOne</span>
-</a>
+<x-navbar/>
 
-    <div style="display: flex; gap: 3rem; list-style: none;">
-        <a href="{{ route('about') }}" style="text-decoration: none; color: #FFFFFF; font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease; position: relative;" onmouseover="this.style.color='#FFBA00'" onmouseout="this.style.color='#FFFFFF'">About Us</a>
-        <a href="{{ route('readspace') }}" style="text-decoration: none; color: #FFFFFF; font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease; position: relative;" onmouseover="this.style.color='#FFBA00'" onmouseout="this.style.color='#FFFFFF'">ReadSpace</a>
-        <a href="{{ route('reservation') }}" style="text-decoration: none; color: #FFBA00; font-weight: 600; font-size: 0.95rem; border-bottom: 2px solid #FFBA00; padding-bottom: 0.25rem;">Reservation</a>
-        <a href="{{ route('finedesk') }}" style="text-decoration: none; color: #FFFFFF; font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease; position: relative;" onmouseover="this.style.color='#FFBA00'" onmouseout="this.style.color='#FFFFFF'">FineDesk</a>
-        <a href="{{ route('membership') }}"style="text-decoration: none; color: #FFFFFF; font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease; position: relative;" onmouseover="this.style.color='#FFBA00'" onmouseout="this.style.color='#FFFFFF'">Membership</a>
-    </div>
+<script>
+function toggleUserMenu() {
+    const menu = document.getElementById('userMenu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
 
-    <div class="search-box">
-        <input type="text" placeholder="Cari buku, penulis, atau ISBN...">
-        <button type="submit">🔍</button>
-    </div>
-
-    <div class="navbar-actions">
-        <div class="notification-icon">
-            🔔
-            <span class="notification-badge">5</span>
-        </div>
-
-        <div class="user-profile">
-            <div class="user-avatar">ZS</div>
-            <div class="user-info">
-                <div class="user-name">Zahra Sanjani</div>
-                <div class="user-role">Admin</div>
-            </div>
-            <span style="color: white; font-size: 0.7rem;">▼</span>
-        </div>
-    </div>
-</div>
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('userMenu');
+    const profile = document.querySelector('.user-profile');
+    
+    if (profile && !profile.contains(event.target)) {
+        menu.style.display = 'none';
+    }
+});
+</script>
 
 <!-- CONTENT -->
 <div class="content">
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1 class="page-title"> Reservation Management</h1>
-        <p class="page-subtitle">Kelola reservasi buku dari member Anda</p>
-    </div>
+    @if(auth()->user()->role === 'admin')
+        {{-- ========== ADMIN VIEW ========== --}}
+        
+        <div class="page-header">
+            <h1 class="page-title">Borrowing Management</h1>
+            <p class="page-subtitle">Kelola peminjaman buku dari semua member</p>
+        </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-        <div class="stat-card waiting">
-            <div class="stat-icon">⏳</div>
-            <div class="stat-content">
-                <div class="stat-value">18</div>
-                <div class="stat-label">Menunggu Tersedia</div>
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card active">
+                <div class="stat-icon">📚</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $stats['activeBorrowings'] ?? 0 }}</div>
+                    <div class="stat-label">Active Borrowings</div>
+                </div>
+            </div>
+
+            <div class="stat-card overdue">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $stats['overdue'] ?? 0 }}</div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+            </div>
+
+            <div class="stat-card returned">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $stats['returnedToday'] ?? 0 }}</div>
+                    <div class="stat-label">Returned Today</div>
+                </div>
+            </div>
+
+            <div class="stat-card total">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $stats['totalBorrowed'] ?? 0 }}</div>
+                    <div class="stat-label">Total History</div>
+                </div>
             </div>
         </div>
 
-        <div class="stat-card ready">
-            <div class="stat-icon">✅</div>
-            <div class="stat-content">
-                <div class="stat-value">7</div>
-                <div class="stat-label">Siap Diambil</div>
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('active')">📚 Active ({{ $allBorrowings->total() }})</button>
+            <button class="tab-btn" onclick="switchTab('overdue')">⚠️ Overdue ({{ $overdueBorrowings->count() }})</button>
+            <button class="tab-btn" onclick="switchTab('history')">✅ History ({{ $history->count() }})</button>
+        </div>
+
+        <!-- TAB: ACTIVE -->
+        <div id="active" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Active Borrowings</div>
+                </div>
+                @if($allBorrowings->count() > 0)
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>Member</th>
+                            <th>Book Title</th>
+                            <th>Borrowed Date</th>
+                            <th>Due Date</th>
+                            <th>Days Left</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        @foreach($allBorrowings as $borrowing)
+                        <tr>
+                            <td><strong>{{ $borrowing->user->name }}</strong><br><small>{{ $borrowing->user->email }}</small></td>
+                            <td><strong>{{ $borrowing->book->title }}</strong><br><small>by {{ $borrowing->book->author }}</small></td>
+                            <td>{{ $borrowing->borrowed_at->format('d M Y') }}</td>
+                            <td>{{ $borrowing->due_date->format('d M Y') }}</td>
+                            <td>
+                                @php
+                                    $daysLeft = now()->diffInDays($borrowing->due_date, false);
+                                @endphp
+                                @if($daysLeft < 0)
+                                    <span style="color: #E74C3C; font-weight: 600;">{{ abs($daysLeft) }} days overdue</span>
+                                @else
+                                    <span style="color: #27AE60; font-weight: 600;">{{ $daysLeft }} days</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($borrowing->status === 'return_requested')
+                                    <span class="badge badge-requested">Return Requested</span>
+                                @elseif($borrowing->due_date < now())
+                                    <span class="badge badge-overdue">Overdue</span>
+                                @else
+                                    <span class="badge badge-active">Active</span>
+                                @endif
+                            </td>
+                            <td>
+                                <button class="btn-action btn-mark-returned" onclick="markReturned({{ $borrowing->id }}, '{{ $borrowing->book->title }}')">
+                                    ✓ Mark Returned
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </table>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    {{ $allBorrowings->links() }}
+                </div>
+                @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <div class="empty-state-text">No active borrowings at the moment</div>
+                </div>
+                @endif
             </div>
         </div>
 
-        <div class="stat-card expired">
-            <div class="stat-icon">⚠️</div>
-            <div class="stat-content">
-                <div class="stat-value">3</div>
-                <div class="stat-label">Kadaluwarsa</div>
+        <!-- TAB: OVERDUE -->
+        <div id="overdue" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Overdue Borrowings</div>
+                </div>
+                @if($overdueBorrowings->count() > 0)
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>Member</th>
+                            <th>Book Title</th>
+                            <th>Due Date</th>
+                            <th>Days Overdue</th>
+                            <th>Estimated Fine</th>
+                            <th>Action</th>
+                        </tr>
+                        @foreach($overdueBorrowings as $borrowing)
+                        <tr>
+                            <td><strong>{{ $borrowing->user->name }}</strong><br><small>{{ $borrowing->user->email }}</small></td>
+                            <td><strong>{{ $borrowing->book->title }}</strong></td>
+                            <td>{{ $borrowing->due_date->format('d M Y') }}</td>
+                            <td style="color: #E74C3C; font-weight: 600;">{{ now()->diffInDays($borrowing->due_date) }} days</td>
+                            <td style="color: #E74C3C; font-weight: 600;">Rp {{ number_format(now()->diffInDays($borrowing->due_date) * 1000) }}</td>
+                            <td>
+                                <button class="btn-action btn-mark-returned" onclick="markReturned({{ $borrowing->id }}, '{{ $borrowing->book->title }}')">
+                                    ✓ Mark Returned
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </table>
+                </div>
+                @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">✅</div>
+                    <div class="empty-state-text">No overdue borrowings. Great!</div>
+                </div>
+                @endif
             </div>
         </div>
-    </div>
 
-    <!-- Tabs -->
-    <div class="tabs-container">
-        <button class="tab-btn active" onclick="switchTab('waiting')">⏳ Menunggu Tersedia (18)</button>
-        <button class="tab-btn" onclick="switchTab('ready')">✅ Siap Diambil (7)</button>
-        <button class="tab-btn" onclick="switchTab('claimed')">📦 Diambil (45)</button>
-        <button class="tab-btn" onclick="switchTab('expired')">⚠️ Kadaluwarsa (3)</button>
-    </div>
-
-    <!-- TAB: WAITING -->
-    <div id="waiting" class="tab-content active">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Reservasi Menunggu Buku Tersedia</div>
-                <button class="btn-small">Refresh</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Member</th>
-                        <th>Buku</th>
-                        <th>Dipesan Sejak</th>
-                        <th>Posisi Antrian</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Thoriq Ibrahim</strong></td>
-                        <td>Clean Code</td>
-                        <td>5 Jan 2025</td>
-                        <td>1st</td>
-                        <td><span class="badge badge-waiting">Waiting</span></td>
-                        <td>
-                            <button class="btn-action btn-mark-ready">Mark Ready</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Rafa Afra</strong></td>
-                        <td>Clean Code</td>
-                        <td>8 Jan 2025</td>
-                        <td>2nd</td>
-                        <td><span class="badge badge-waiting">Waiting</span></td>
-                        <td>
-                            <button class="btn-action btn-mark-ready">Mark Ready</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ilham Maulana</strong></td>
-                        <td>Design Patterns</td>
-                        <td>3 Jan 2025</td>
-                        <td>1st</td>
-                        <td><span class="badge badge-waiting">Waiting</span></td>
-                        <td>
-                            <button class="btn-action btn-mark-ready">Mark Ready</button>
-                        </td>
-                    </tr>
-                </table>
+        <!-- TAB: HISTORY -->
+        <div id="history" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Return History</div>
+                </div>
+                @if($history->count() > 0)
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>Member</th>
+                            <th>Book Title</th>
+                            <th>Borrowed</th>
+                            <th>Returned</th>
+                            <th>Duration</th>
+                            <th>Fine</th>
+                        </tr>
+                        @foreach($history as $borrowing)
+                        <tr>
+                            <td><strong>{{ $borrowing->user->name }}</strong></td>
+                            <td><strong>{{ $borrowing->book->title }}</strong></td>
+                            <td>{{ $borrowing->borrowed_at->format('d M Y') }}</td>
+                            <td>{{ $borrowing->actual_return_date->format('d M Y') }}</td>
+                            <td>{{ $borrowing->borrowed_at->diffInDays($borrowing->actual_return_date) }} days</td>
+                            <td>
+                                @if($borrowing->fine_amount > 0)
+                                    <span style="color: #E74C3C; font-weight: 600;">Rp {{ number_format($borrowing->fine_amount) }}</span>
+                                @else
+                                    <span style="color: #27AE60;">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </table>
+                </div>
+                @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">📖</div>
+                    <div class="empty-state-text">No return history yet</div>
+                </div>
+                @endif
             </div>
         </div>
-    </div>
 
-    <!-- TAB: READY -->
-    <div id="ready" class="tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Buku Siap Diambil (Batas Pengambilan 3 Hari)</div>
-                <button class="btn-small">Refresh</button>
+    @else
+        {{-- ========== MEMBER VIEW ========== --}}
+        
+        <div class="page-header">
+            <h1 class="page-title">My Borrowings</h1>
+            <p class="page-subtitle">Kelola buku yang sedang Anda pinjam</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card active">
+                <div class="stat-icon">📖</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $stats['currentBorrowed'] ?? 0 }}</div>
+                    <div class="stat-label">Currently Borrowed</div>
+                </div>
             </div>
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Member</th>
-                        <th>Buku</th>
-                        <th>Siap Sejak</th>
-                        <th>Batas Pengambilan</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Dwi Putra</strong></td>
-                        <td>The Pragmatic Programmer</td>
-                        <td>10 Jan 2025</td>
-                        <td><span class="badge badge-ready">Hari Ini</span></td>
-                        <td><span class="badge badge-ready">Ready</span></td>
-                        <td>
-                            <button class="btn-action btn-claim">Claim</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Fadil Efdika</strong></td>
-                        <td>Refactoring</td>
-                        <td>9 Jan 2025</td>
-                        <td><span class="badge badge-expired">Besok!</span></td>
-                        <td><span class="badge badge-ready">Ready</span></td>
-                        <td>
-                            <button class="btn-action btn-claim">Claim</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Novi Fitri</strong></td>
-                        <td>Code Complete</td>
-                        <td>8 Jan 2025</td>
-                        <td><span class="badge badge-expired">Expired</span></td>
-                        <td><span class="badge badge-ready">Ready</span></td>
-                        <td>
-                            <button class="btn-action btn-claim">Claim</button>
-                        </td>
-                    </tr>
-                </table>
+
+            <div class="stat-card overdue">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $stats['overdue'] ?? 0 }}</div>
+                    <div class="stat-label">Overdue Books</div>
+                </div>
+            </div>
+
+            <div class="stat-card total">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $stats['totalBorrowed'] ?? 0 }}</div>
+                    <div class="stat-label">Total Borrowed</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- TAB: CLAIMED -->
-    <div id="claimed" class="tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Reservasi yang Telah Diambil</div>
-                <button class="btn-small">Refresh</button>
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('current')">📚 Current ({{ $myActiveBorrowings->count() }})</button>
+            <button class="tab-btn" onclick="switchTab('myhistory')">✅ History ({{ $myHistory->count() }})</button>
+        </div>
+
+        <!-- TAB: CURRENT BORROWINGS -->
+        <div id="current" class="tab-content active">
+            @if($myActiveBorrowings->count() > 0)
+            <div class="borrowings-grid">
+                @foreach($myActiveBorrowings as $borrowing)
+                <div class="borrowing-card">
+                    <div class="borrowing-book-cover">
+                        @if($borrowing->book->cover_image)
+                            <img src="{{ asset('storage/' . $borrowing->book->cover_image) }}" alt="{{ $borrowing->book->title }}">
+                        @else
+                            {{ $borrowing->book->getCategoryEmoji() }}
+                        @endif
+                    </div>
+                    <div class="borrowing-info">
+                        <div class="borrowing-book-title">{{ $borrowing->book->title }}</div>
+                        <div class="borrowing-book-author">by {{ $borrowing->book->author }}</div>
+
+                        @if($borrowing->status === 'return_requested')
+                            <div style="background: #FFF3CD; color: #856404; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; font-weight: 600; font-size: 0.85rem;">
+                                ⏳ Return request submitted. Please bring the book to the library.
+                            </div>
+                        @endif
+
+                        <div class="borrowing-dates">
+                            <div class="borrowing-date-item">
+                                <span class="borrowing-date-label">Borrowed:</span>
+                                <span class="borrowing-date-value">{{ $borrowing->borrowed_at->format('d M Y') }}</span>
+                            </div>
+                            <div class="borrowing-date-item">
+                                <span class="borrowing-date-label">Due Date:</span>
+                                <span class="borrowing-date-value {{ $borrowing->due_date < now() ? 'overdue' : '' }}">
+                                    {{ $borrowing->due_date->format('d M Y') }}
+                                    @if($borrowing->due_date < now())
+                                        ({{ now()->diffInDays($borrowing->due_date) }} days overdue)
+                                    @endif
+                                </span>
+                            </div>
+                            @if($borrowing->due_date < now())
+                            <div class="borrowing-date-item">
+                                <span class="borrowing-date-label">Estimated Fine:</span>
+                                <span class="borrowing-date-value overdue">
+                                    Rp {{ number_format(now()->diffInDays($borrowing->due_date) * 1000) }}
+                                </span>
+                            </div>
+                            @endif
+                        </div>
+
+                        <button 
+                            class="btn-return" 
+                            onclick="requestReturn({{ $borrowing->id }})"
+                            {{ $borrowing->status === 'return_requested' ? 'disabled' : '' }}>
+                            {{ $borrowing->status === 'return_requested' ? '⏳ Return Requested' : '📤 Request Return' }}
+                        </button>
+                    </div>
+                </div>
+                @endforeach
             </div>
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Member</th>
-                        <th>Buku</th>
-                        <th>Diambil Tanggal</th>
-                        <th>Tanggal Klaim</th>
-                        <th>Status</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Tariq Rahman</strong></td>
-                        <td>Java Programming</td>
-                        <td>5 Jan 2025</td>
-                        <td>6 Jan 2025</td>
-                        <td><span class="badge badge-claimed">Claimed</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Lisa Maarif</strong></td>
-                        <td>Python Cookbook</td>
-                        <td>3 Jan 2025</td>
-                        <td>4 Jan 2025</td>
-                        <td><span class="badge badge-claimed">Claimed</span></td>
-                    </tr>
-                </table>
+            @else
+            <div class="card">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <div class="empty-state-text">You don't have any borrowed books at the moment</div>
+                    <div class="empty-state-action">
+                        <a href="{{ route('readspace') }}" class="btn-browse">Browse Books</a>
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
+
+        <!-- TAB: HISTORY -->
+        <div id="myhistory" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Borrowing History</div>
+                </div>
+                @if($myHistory->count() > 0)
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>Book Title</th>
+                            <th>Borrowed</th>
+                            <th>Returned</th>
+                            <th>Duration</th>
+                            <th>Fine</th>
+                        </tr>
+                        @foreach($myHistory as $borrowing)
+                        <tr>
+                            <td><strong>{{ $borrowing->book->title }}</strong><br><small>by {{ $borrowing->book->author }}</small></td>
+                            <td>{{ $borrowing->borrowed_at->format('d M Y') }}</td>
+                            <td>{{ $borrowing->actual_return_date->format('d M Y') }}</td>
+                            <td>{{ $borrowing->borrowed_at->diffInDays($borrowing->actual_return_date) }} days</td>
+                            <td>
+                                @if($borrowing->fine_amount > 0)
+                                    <span style="color: #E74C3C; font-weight: 600;">Rp {{ number_format($borrowing->fine_amount) }}</span>
+                                @else
+                                    <span style="color: #27AE60; font-weight: 600;">No Fine</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </table>
+                </div>
+                @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">📖</div>
+                    <div class="empty-state-text">No borrowing history yet</div>
+                </div>
+                @endif
             </div>
         </div>
-    </div>
-
-    <!-- TAB: EXPIRED -->
-    <div id="expired" class="tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Reservasi Kadaluarsa</div>
-                <button class="btn-small">Refresh</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Member</th>
-                        <th>Buku</th>
-                        <th>Ready Sejak</th>
-                        <th>Batas Akhir</th>
-                        <th>Hari Telat</th>
-                        <th>Status</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Bae Kajol</strong></td>
-                        <td>Algorithms</td>
-                        <td>7 Jan 2025</td>
-                        <td>10 Jan 2025</td>
-                        <td>3 hari</td>
-                        <td><span class="badge badge-expired">Expired</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Alif Muzahid</strong></td>
-                        <td>Database Design</td>
-                        <td>6 Jan 2025</td>
-                        <td>9 Jan 2025</td>
-                        <td>4 hari</td>
-                        <td><span class="badge badge-expired">Expired</span></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
+    @endif
 </div>
 
 <script>
-    function switchTab(tabName) {
-        // Hide all tabs
-        const tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(tab => tab.classList.remove('active'));
+// Tab switching
+function switchTab(tabName) {
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.classList.remove('active'));
 
-        // Remove active class from all buttons
-        const buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
 
-        // Show selected tab
-        document.getElementById(tabName).classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
 
-        // Add active class to clicked button
-        event.target.classList.add('active');
+// ===== MEMBER FUNCTIONS =====
+@if(auth()->user()->role === 'member')
+function requestReturn(borrowingId) {
+    if (!confirm('Request to return this book? Please bring the book to the library after confirming.')) {
+        return;
     }
+
+    fetch(`/reservation/request-return/${borrowingId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
+@endif
+
+// ===== ADMIN FUNCTIONS =====
+@if(auth()->user()->role === 'admin')
+function markReturned(borrowingId, bookTitle) {
+    if (!confirm(`Mark "${bookTitle}" as returned?`)) {
+        return;
+    }
+
+    fetch(`/reservation/mark-returned/${borrowingId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
+@endif
+
+// Toast Notification
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? '#0C3B2E' : type === 'error' ? '#C62828' : '#0C3B2E';
+    
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: ${bgColor};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
 </script>
+
+<style>
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+</style>
+
+<x-footer/>
 
 @endsection

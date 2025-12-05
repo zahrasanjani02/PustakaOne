@@ -12,14 +12,15 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('author');
-            $table->string('isbn')->unique()->nullable();
+            $table->string('isbn')->unique();
             $table->string('publisher')->nullable();
-            $table->year('year')->nullable();
+            $table->string('published_year')->nullable();
             $table->string('category')->nullable();
             $table->text('description')->nullable();
             $table->integer('total_copies')->default(1);
             $table->integer('available_copies')->default(1);
-            $table->decimal('fine_per_day', 8, 2)->default(5000);
+            $table->string('language')->nullable(); 
+            $table->string('location')->nullable(); 
             $table->string('cover_image')->nullable();
             $table->timestamps();
         });
