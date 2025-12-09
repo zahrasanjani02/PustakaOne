@@ -332,24 +332,52 @@
     }
 
     /* ===== BUTTONS ===== */
+    .action-buttons {
+        display: flex;
+        flex-direction: column; 
+        gap: 6px;               
+        width: 100%;
+        min-width: 110px;       
+    }
+
+    .action-buttons form {
+        width: 100%;
+        margin: 0;
+    }
+
     .btn-action {
-        padding: 0.5rem 1rem;
+        width: 100%;            
+        padding: 0.5rem;        
         border: none;
         border-radius: 6px;
         font-size: 0.8rem;
         cursor: pointer;
         transition: 0.3s ease;
         font-family: 'Poppins', sans-serif;
-        font-weight: 500;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center; 
+        gap: 6px;
+        line-height: 1;
     }
 
     .btn-mark-returned {
         background: #D5F4E6;
         color: #27AE60;
+        border: 1px solid #A3E9C5; 
     }
-
     .btn-mark-returned:hover {
         background: #A3E9C5;
+    }
+
+    .btn-extend {
+        background: #D6EAF8;
+        color: #2980B9;
+        border: 1px solid #AED6F1;
+    }
+    .btn-extend:hover {
+        background: #AED6F1;
     }
 
     /* ===== EMPTY STATE ===== */
@@ -440,6 +468,34 @@
             overflow-x: scroll;
         }
     }
+
+    .btn-extend-member {
+        width: 100%;
+        background: #F39C12; /* Warna Oranye/Kuning */
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-extend-member:hover {
+        background: #D68910;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+    }
+
+    .btn-extend-member.disabled {
+        background: #E5E7EB; /* Abu-abu */
+        color: #9CA3AF;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
 </style>
 
 <!-- NAVBAR -->
@@ -459,6 +515,40 @@ document.addEventListener('click', function(event) {
         menu.style.display = 'none';
     }
 });
+
+// ===== LOGIKA MODAL EXTEND =====
+function openExtendModal(borrowingId, currentDueDate, bookTitle) {
+    const modal = document.getElementById('extendModal');
+    const form = document.getElementById('extendForm');
+    const dateInput = document.getElementById('new_due_date');
+    const titleLabel = document.getElementById('modalBookTitle');
+
+    // 1. Set URL Action Form agar mengarah ke ID yang benar
+    form.action = `/reservation/extend/${borrowingId}`;
+
+    // 2. Isi value input dengan data saat ini
+    dateInput.value = currentDueDate;
+    // Set minimal tanggal hari ini (biar ga milih tanggal masa lalu)
+    dateInput.min = new Date().toISOString().split("T")[0];
+    
+    titleLabel.textContent = bookTitle;
+
+    // 3. Tampilkan Modal
+    modal.style.display = 'flex';
+}
+
+function closeExtendModal() {
+    document.getElementById('extendModal').style.display = 'none';
+}
+
+// Tutup modal kalau klik di luar kotak putih
+window.onclick = function(event) {
+    const modal = document.getElementById('extendModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
 </script>
 
 <!-- CONTENT -->
@@ -514,7 +604,7 @@ document.addEventListener('click', function(event) {
         </div>
 
         <!-- TAB: ACTIVE -->
-        <div id="active" class="tab-content active">
+         <div id="active" class="tab-content active">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Active Borrowings</div>
@@ -532,34 +622,55 @@ document.addEventListener('click', function(event) {
                             <th>Action</th>
                         </tr>
                         @foreach($allBorrowings as $borrowing)
+                        @php
+                            // Hitung sisa hari
+                            $daysLeft = now()->diffInDays($borrowing->due_date, false);
+                            $isOverdue = $daysLeft < 0;
+                            
+                            // Hitung denda jika overdue (bulatkan ke atas)
+                            $daysOverdue = $isOverdue ? ceil(abs($daysLeft)) : 0;
+                            $estimatedFine = $daysOverdue * 1000; // Rp 1.000 per hari
+                        @endphp
                         <tr>
                             <td><strong>{{ $borrowing->user->name }}</strong><br><small>{{ $borrowing->user->email }}</small></td>
                             <td><strong>{{ $borrowing->book->title }}</strong><br><small>by {{ $borrowing->book->author }}</small></td>
                             <td>{{ $borrowing->borrowed_at->format('d M Y') }}</td>
                             <td>{{ $borrowing->due_date->format('d M Y') }}</td>
                             <td>
-                                @php
-                                    $daysLeft = now()->diffInDays($borrowing->due_date, false);
-                                @endphp
-                                @if($daysLeft < 0)
-                                    <span style="color: #E74C3C; font-weight: 600;">{{ abs($daysLeft) }} days overdue</span>
+                                @if($isOverdue)
+                                    <span style="color: #E74C3C; font-weight: 600;">
+                                        {{ $daysOverdue }} days overdue
+                                    </span>
                                 @else
-                                    <span style="color: #27AE60; font-weight: 600;">{{ $daysLeft }} days</span>
+                                    <span style="color: #27AE60; font-weight: 600;">
+                                        {{ ceil($daysLeft) }} days
+                                    </span>
                                 @endif
                             </td>
                             <td>
                                 @if($borrowing->status === 'return_requested')
                                     <span class="badge badge-requested">Return Requested</span>
-                                @elseif($borrowing->due_date < now())
+                                @elseif($isOverdue)
                                     <span class="badge badge-overdue">Overdue</span>
                                 @else
                                     <span class="badge badge-active">Active</span>
                                 @endif
                             </td>
                             <td>
-                                <button class="btn-action btn-mark-returned" onclick="markReturned({{ $borrowing->id }}, '{{ $borrowing->book->title }}')">
-                                    ✓ Mark Returned
+                                <div class="action-buttons">
+                                <button type="button" 
+                                    class="btn-action btn-extend" 
+                                    onclick="openExtendModal({{ $borrowing->id }}, '{{ $borrowing->due_date->format('Y-m-d') }}', '{{ $borrowing->book->title }}')"
+                                    title="Perpanjang Peminjaman">
+                                    <span>📅</span> Extend
                                 </button>
+
+                                    {{-- TOMBOL RETURN --}}
+                                    <button class="btn-action btn-mark-returned" onclick="markReturned({{ $borrowing->id }}, '{{ $borrowing->book->title }}')">
+                                        <span>✓</span> Return
+                                    </button>
+
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -578,6 +689,7 @@ document.addEventListener('click', function(event) {
         </div>
 
         <!-- TAB: OVERDUE -->
+<!-- TAB: OVERDUE -->
         <div id="overdue" class="tab-content">
             <div class="card">
                 <div class="card-header">
@@ -595,16 +707,29 @@ document.addEventListener('click', function(event) {
                             <th>Action</th>
                         </tr>
                         @foreach($overdueBorrowings as $borrowing)
+                        @php
+                            // Hitung Overdue (Bulat & Positif)
+                            $daysOverdue = ceil(abs(now()->diffInDays($borrowing->due_date, false)));
+                            $estimatedFine = $daysOverdue * 1000;
+                        @endphp
                         <tr>
                             <td><strong>{{ $borrowing->user->name }}</strong><br><small>{{ $borrowing->user->email }}</small></td>
                             <td><strong>{{ $borrowing->book->title }}</strong></td>
                             <td>{{ $borrowing->due_date->format('d M Y') }}</td>
-                            <td style="color: #E74C3C; font-weight: 600;">{{ now()->diffInDays($borrowing->due_date) }} days</td>
-                            <td style="color: #E74C3C; font-weight: 600;">Rp {{ number_format(now()->diffInDays($borrowing->due_date) * 1000) }}</td>
+                            
+                            {{-- Tampilkan Hari Bulat --}}
+                            <td style="color: #E74C3C; font-weight: 600;">{{ $daysOverdue }} days</td>
+                            
+                            {{-- Tampilkan Denda Bulat --}}
+                            <td style="color: #E74C3C; font-weight: 600;">Rp {{ number_format($estimatedFine) }}</td>
+                            
                             <td>
-                                <button class="btn-action btn-mark-returned" onclick="markReturned({{ $borrowing->id }}, '{{ $borrowing->book->title }}')">
-                                    ✓ Mark Returned
-                                </button>
+                                <div class="action-buttons">
+                                    {{-- Tombol Return dengan Alert Denda --}}
+                                    <button class="btn-action btn-mark-returned" onclick="markReturned({{ $borrowing->id }}, '{{ $borrowing->book->title }}', {{ $estimatedFine }})">
+                                        <span>✓</span> Mark Returned
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -642,7 +767,24 @@ document.addEventListener('click', function(event) {
                             <td><strong>{{ $borrowing->book->title }}</strong></td>
                             <td>{{ $borrowing->borrowed_at->format('d M Y') }}</td>
                             <td>{{ $borrowing->actual_return_date->format('d M Y') }}</td>
-                            <td>{{ $borrowing->borrowed_at->diffInDays($borrowing->actual_return_date) }} days</td>
+                            {{-- PERBAIKAN DI SINI UNTUK DURATION --}}
+                            <td>
+                            @php
+                                // Ambil tanggal pinjam dan tanggal kembali, abaikan waktu (startOfDay)
+                                $borrowed_date_only = $borrowing->borrowed_at->clone()->startOfDay();
+                                $returned_date_only = $borrowing->actual_return_date->clone()->startOfDay();
+
+                                // Hitung selisih hari (akan menghasilkan integer)
+                                $duration = $borrowed_date_only->diffInDays($returned_date_only);
+                                
+                                // Jika durasi 0 hari (pinjam dan kembali di hari yang sama), tampilkan 1 hari
+                                if ($duration == 0) {
+                                    $duration = 1;
+                                }
+                            @endphp
+                            {{ $duration }} days
+                            </td>
+                            {{-- END PERBAIKAN --}}
                             <td>
                                 @if($borrowing->fine_amount > 0)
                                     <span style="color: #E74C3C; font-weight: 600;">Rp {{ number_format($borrowing->fine_amount) }}</span>
@@ -709,7 +851,20 @@ document.addEventListener('click', function(event) {
             @if($myActiveBorrowings->count() > 0)
             <div class="borrowings-grid">
                 @foreach($myActiveBorrowings as $borrowing)
-                <div class="borrowing-card">
+                @php
+                    // 1. Hitung selisih hari (bisa desimal dan negatif)
+                    $rawDays = now()->diffInDays($borrowing->due_date, false);
+                    $isOverdue = $rawDays < 0;
+
+                    // 2. Bulatkan dan Positifkan untuk tampilan
+                    // Jika overdue: -1.3 -> 2 hari
+                    // Jika aktif: 1.3 -> 2 hari
+                    $daysDisplay = ceil(abs($rawDays));
+                    
+                    // 3. Hitung Denda (Jika overdue)
+                    $estimatedFine = $isOverdue ? $daysDisplay * 1000 : 0;
+                @endphp
+                <div class="borrowing-card {{ $isOverdue ? 'overdue' : '' }}">
                     <div class="borrowing-book-cover">
                         @if($borrowing->book->cover_image)
                             <img src="{{ asset('storage/' . $borrowing->book->cover_image) }}" alt="{{ $borrowing->book->title }}">
@@ -734,29 +889,63 @@ document.addEventListener('click', function(event) {
                             </div>
                             <div class="borrowing-date-item">
                                 <span class="borrowing-date-label">Due Date:</span>
-                                <span class="borrowing-date-value {{ $borrowing->due_date < now() ? 'overdue' : '' }}">
+                                <span class="borrowing-date-value {{ $isOverdue ? 'overdue' : '' }}">
                                     {{ $borrowing->due_date->format('d M Y') }}
-                                    @if($borrowing->due_date < now())
-                                        ({{ now()->diffInDays($borrowing->due_date) }} days overdue)
-                                    @endif
                                 </span>
                             </div>
-                            @if($borrowing->due_date < now())
+                            
+                            {{-- TAMPILAN HARI (Sisa / Terlambat) --}}
                             <div class="borrowing-date-item">
+                                <span class="borrowing-date-label">Status:</span>
+                                @if($isOverdue)
+                                    <span class="days-left overdue">⚠️ Overdue by {{ $daysDisplay }} days</span>
+                                @else
+                                    <span class="days-left">✓ {{ $daysDisplay }} days left</span>
+                                @endif
+                            </div>
+
+                            {{-- TAMPILAN DENDA (Hanya jika Overdue) --}}
+                            @if($isOverdue)
+                            <div class="borrowing-date-item" style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ddd;">
                                 <span class="borrowing-date-label">Estimated Fine:</span>
                                 <span class="borrowing-date-value overdue">
-                                    Rp {{ number_format(now()->diffInDays($borrowing->due_date) * 1000) }}
+                                    Rp {{ number_format($estimatedFine) }}
                                 </span>
                             </div>
                             @endif
                         </div>
 
-                        <button 
-                            class="btn-return" 
-                            onclick="requestReturn({{ $borrowing->id }})"
-                            {{ $borrowing->status === 'return_requested' ? 'disabled' : '' }}>
-                            {{ $borrowing->status === 'return_requested' ? '⏳ Return Requested' : '📤 Request Return' }}
-                        </button>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            
+                            {{-- TOMBOL EXTEND (PERPANJANG) --}}
+                            {{-- Logic: Hanya muncul jika belum overdue DAN belum pernah diperpanjang --}}
+                            @if(!$isOverdue && $borrowing->extension_count < 1)
+                                <form action="{{ route('reservation.extendSelf', $borrowing->id) }}" method="POST" onsubmit="return confirm('Perpanjang peminjaman selama 7 hari? (Hanya bisa dilakukan 1 kali)');">
+                                    @csrf
+                                    <button type="submit" class="btn-extend-member">
+                                        ⏳ Perpanjang (Extend)
+                                    </button>
+                                </form>
+                            @elseif($borrowing->extension_count >= 1)
+                                {{-- Jika sudah pernah extend, tampilkan info disabled --}}
+                                <button class="btn-extend-member disabled" disabled>
+                                    🚫 Limit Extend Tercapai
+                                </button>
+                            @else
+                                {{-- Jika overdue, tidak bisa extend --}}
+                                <button class="btn-extend-member disabled" disabled>
+                                    ⚠️ Terlambat (Tidak bisa Extend)
+                                </button>
+                            @endif
+
+                            {{-- TOMBOL REQUEST RETURN (YANG LAMA) --}}
+                            <button 
+                                class="btn-return" 
+                                onclick="requestReturn({{ $borrowing->id }})"
+                                {{ $borrowing->status === 'return_requested' ? 'disabled' : '' }}>
+                                {{ $borrowing->status === 'return_requested' ? '⏳ Return Requested' : '📤 Request Return' }}
+                            </button>
+                        </div>
                     </div>
                 </div>
                 @endforeach
@@ -863,8 +1052,24 @@ function requestReturn(borrowingId) {
 
 // ===== ADMIN FUNCTIONS =====
 @if(auth()->user()->role === 'admin')
-function markReturned(borrowingId, bookTitle) {
-    if (!confirm(`Mark "${bookTitle}" as returned?`)) {
+
+// Fungsi menerima parameter fineAmount (denda)
+function markReturned(borrowingId, bookTitle, fineAmount = 0) {
+    
+    let message = `Mark "${bookTitle}" as returned?`;
+
+    // Jika ada denda, ubah pesan konfirmasi jadi lebih tegas
+    if (fineAmount > 0) {
+        // Format rupiah
+        let formattedFine = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(fineAmount);
+        
+        message = `⚠️ PERINGATAN: Buku ini TERLAMBAT!\n\n` +
+                  `Member terkena denda sebesar: ${formattedFine}\n\n` +
+                  `Pastikan member sudah membayar denda sebelum Anda memproses pengembalian.\n\n` +
+                  `Lanjutkan pengembalian?`;
+    }
+
+    if (!confirm(message)) {
         return;
     }
 
@@ -943,5 +1148,91 @@ function showToast(message, type = 'info') {
 </style>
 
 <x-footer/>
+
+{{-- ===== MODAL EXTEND (POPUP) ===== --}}
+<div id="extendModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📅 Perpanjang / Edit Tanggal</h3>
+            <span class="close-modal" onclick="closeExtendModal()">&times;</span>
+        </div>
+        
+        <form id="extendForm" method="POST">
+            @csrf
+            <div class="modal-body">
+                <p style="margin-bottom: 1rem; color: #666;">
+                    Update tanggal jatuh tempo untuk buku: <br>
+                    <strong id="modalBookTitle" style="color: #0C3B2E;">-</strong>
+                </p>
+
+                <div class="form-group">
+                    <label for="new_due_date" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Pilih Tanggal Jatuh Tempo Baru:</label>
+                    <input type="date" id="new_due_date" name="new_due_date" class="form-input" required style="width: 100%; padding: 0.8rem; border: 2px solid #E0E0E0; border-radius: 8px;">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeExtendModal()">Batal</button>
+                <button type="submit" class="btn-save">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- CSS KHUSUS MODAL --}}
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        animation: slideUp 0.3s;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #EEE;
+        padding-bottom: 1rem;
+    }
+
+    .modal-title { font-size: 1.2rem; font-weight: 700; color: #0C3B2E; }
+    .close-modal { font-size: 1.5rem; cursor: pointer; color: #999; }
+    .close-modal:hover { color: #333; }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-cancel {
+        background: white; border: 1px solid #CCC; padding: 0.6rem 1.2rem;
+        border-radius: 6px; cursor: pointer; font-weight: 600;
+    }
+    .btn-save {
+        background: #0C3B2E; color: white; border: none; padding: 0.6rem 1.2rem;
+        border-radius: 6px; cursor: pointer; font-weight: 600;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
 
 @endsection

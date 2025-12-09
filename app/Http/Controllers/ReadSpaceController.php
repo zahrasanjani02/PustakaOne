@@ -4,18 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Favorite;
-use App\Models\Borrowing;
+use App\Models\Borrowing; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReadSpaceController extends Controller
 {
+    // ==========================================
+    // PUBLIC / SHARED FEATURES (INDEX & SHOW)
+    // ==========================================
+
     // Menampilkan katalog buku
     public function index(Request $request)
     {
         $query = Book::query();
 
-        // Search functionality
+        // 1. Search Logic
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -25,26 +30,42 @@ class ReadSpaceController extends Controller
             });
         }
 
-        // Category filter
+        // 2. Category Filter
         if ($request->filled('category') && $request->category != 'all') {
             $query->where('category', $request->category);
         }
 
-        // Untuk admin: pagination 20 items
-        // Untuk member: pagination 12 items
+        // Pagination: Admin dapat 20 item, Member 12 item
         $perPage = Auth::check() && Auth::user()->role === 'admin' ? 20 : 12;
         $books = $query->paginate($perPage);
         
         $categories = Book::distinct()->pluck('category')->filter();
         
-        // Data tambahan untuk admin
+        // 3. STATISTIK ADMIN
         $stats = [];
         if (Auth::check() && Auth::user()->role === 'admin') {
+            
+            $activeBorrowingsCount = Borrowing::where('status', 'active')->count();
+
+            // --- LOGIKA LOW STOCK BARU (1/3 dari Total) ---
+            // Kita ambil semua buku yang stoknya ada (lebih dari 0)
+            // Lalu kita filter satu per satu menggunakan PHP
+            $lowStockCount = Book::where('available_copies', '>', 0)
+                ->get(['total_copies', 'available_copies']) // Ambil kolom yg butuh aja biar ringan
+                ->filter(function ($book) {
+                    // Rumus: Ambang batas = Total dibagi 3, dibulatkan ke atas (ceil)
+                    $threshold = ceil($book->total_copies / 3);
+                    
+                    // Jika stok tersedia <= ambang batas, maka Low Stock
+                    return $book->available_copies <= $threshold;
+                })
+                ->count();
+
             $stats = [
                 'totalBooks' => Book::count(),
                 'totalAvailable' => Book::sum('available_copies'),
-                'totalBorrowed' => Borrowing::whereNull('returned_at')->count(),
-                'lowStock' => Book::where('available_copies', '<=', 2)->where('available_copies', '>', 0)->count()
+                'totalBorrowed' => $activeBorrowingsCount,
+                'lowStock' => $lowStockCount // <--- Masukkan hasil hitungan di sini
             ];
         }
 
@@ -56,7 +77,7 @@ class ReadSpaceController extends Controller
     {
         $book = Book::findOrFail($id);
         
-        // Check apakah user sudah login dan buku ini difavoritkan
+        // Cek apakah user sudah memfavoritkan buku ini
         $isFavorited = false;
         if (Auth::check()) {
             $isFavorited = $book->isFavoritedBy(Auth::id());
@@ -65,47 +86,32 @@ class ReadSpaceController extends Controller
         return view('ReadSpace.book-detail', compact('book', 'isFavorited'));
     }
 
-    // Toggle favorite (tambah/hapus dari favorite)
+    // ==========================================
+    // MEMBER FEATURES (FAVORITE & BORROW)
+    // ==========================================
+
+    // Toggle favorite (tambah/hapus)
     public function toggleFavorite(Request $request, $bookId)
     {
         if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Silakan login terlebih dahulu'
-            ], 401);
+            return response()->json(['success' => false, 'message' => 'Silakan login terlebih dahulu'], 401);
         }
 
         $book = Book::findOrFail($bookId);
         $userId = Auth::id();
 
-        // Check apakah sudah difavoritkan
-        $favorite = Favorite::where('user_id', $userId)
-                           ->where('book_id', $bookId)
-                           ->first();
+        $favorite = Favorite::where('user_id', $userId)->where('book_id', $bookId)->first();
 
         if ($favorite) {
-            // Hapus dari favorite
             $favorite->delete();
-            return response()->json([
-                'success' => true,
-                'isFavorited' => false,
-                'message' => 'Buku dihapus dari favorit'
-            ]);
+            return response()->json(['success' => true, 'isFavorited' => false, 'message' => 'Buku dihapus dari favorit']);
         } else {
-            // Tambah ke favorite
-            Favorite::create([
-                'user_id' => $userId,
-                'book_id' => $bookId
-            ]);
-            return response()->json([
-                'success' => true,
-                'isFavorited' => true,
-                'message' => 'Buku ditambahkan ke favorit'
-            ]);
+            Favorite::create(['user_id' => $userId, 'book_id' => $bookId]);
+            return response()->json(['success' => true, 'isFavorited' => true, 'message' => 'Buku ditambahkan ke favorit']);
         }
     }
 
-    // Menampilkan daftar buku favorit user
+    // Menampilkan halaman favorit
     public function favorites()
     {
         if (!Auth::check()) {
@@ -113,83 +119,192 @@ class ReadSpaceController extends Controller
         }
 
         $favorites = Auth::user()->favorites()->with('book')->latest()->get();
-        
         return view('ReadSpace.favorites', compact('favorites'));
     }
 
-    // ========== METHOD BARU: BORROW BOOK ==========
-    public function borrowBook(Request $request, $bookId)
+    // Proses Peminjaman Buku
+public function borrowBook(Request $request, $bookId)
     {
-        // Validasi: User harus login
+        // 1. Cek Login
         if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Silakan login terlebih dahulu'
-            ], 401);
+            return response()->json(['success' => false, 'message' => 'Silakan login terlebih dahulu'], 401);
         }
 
         $user = Auth::user();
         $book = Book::findOrFail($bookId);
 
-        // Validasi 1: Cek apakah buku tersedia
-        if ($book->available_copies <= 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Buku ini sedang tidak tersedia'
-            ], 400);
+        // --- PERBAIKAN LOGIKA MEMBERSHIP ---
+        
+        // Member dianggap AKTIF hanya jika:
+        // 1. Kolom membership_end TIDAK KOSONG (NotNull)
+        // 2. DAN Tanggalnya masih berlaku (Greater than or Equal to Today)
+        $isMembershipActive = $user->membership_end && \Carbon\Carbon::parse($user->membership_end)->endOfDay()->gte(now());
+
+        if ($isMembershipActive) {
+            // KONDISI MEMBER AKTIF
+            $maxBooks = 3;
+            $loanDuration = 14; 
+            $statusLabel = "Membership Active";
+        } else {
+            // KONDISI MEMBER EXPIRED / BELUM JOIN (NULL)
+            $maxBooks = 1;
+            $loanDuration = 7; 
+            $statusLabel = "Membership Expired/Inactive";
         }
 
-        // Validasi 2: Cek apakah user sudah pinjam buku yang sama dan belum dikembalikan
+        // --- VALIDASI ---
+
+        // Validasi 1: Stok habis
+        if ($book->available_copies <= 0) {
+            return response()->json(['success' => false, 'message' => 'Buku ini sedang tidak tersedia'], 400);
+        }
+
+        // Validasi 2: Sudah pinjam buku yang sama
         $existingBorrowing = Borrowing::where('user_id', $user->id)
                                       ->where('book_id', $bookId)
-                                      ->whereNull('returned_at')
+                                      ->whereNull('actual_return_date') // atau status != returned
                                       ->first();
 
         if ($existingBorrowing) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda sudah meminjam buku ini dan belum mengembalikannya'
-            ], 400);
+            return response()->json(['success' => false, 'message' => 'Anda sudah meminjam buku ini.'], 400);
         }
 
-        // Validasi 3: Cek apakah user sudah meminjam lebih dari 3 buku (limit)
-        $activeBorrowings = Borrowing::where('user_id', $user->id)
-                                     ->whereNull('returned_at')
+        // Validasi 3: Cek Limit Jumlah Buku
+        $activeBorrowingsCount = Borrowing::where('user_id', $user->id)
+                                     ->whereNull('actual_return_date')
                                      ->count();
 
-        if ($activeBorrowings >= 3) {
+        if ($activeBorrowingsCount >= $maxBooks) {
             return response()->json([
-                'success' => false,
-                'message' => 'Anda sudah mencapai batas maksimal peminjaman (3 buku)'
+                'success' => false, 
+                'message' => "Gagal! Status: {$statusLabel}. Batas pinjam hanya {$maxBooks} buku. Harap kembalikan buku lain atau perbarui membership."
             ], 400);
         }
 
-        // Proses peminjaman
-        // Proses peminjaman
-try {
-    // Buat record borrowing baru
-    $borrowing = Borrowing::create([
-        'user_id' => $user->id,
-        'book_id' => $book->id,
-        'borrowed_at' => now(),
-        'due_date' => now()->addDays(14)->toDateString(), // ← TAMBAHKAN ->toDateString()
-        'status' => 'active' // ← GANTI dari 'borrowed' ke 'active' (sesuai enum di migration)
-    ]);
+        try {
+            // --- PROSES PINJAM ---
+            Borrowing::create([
+                'user_id' => $user->id,
+                'book_id' => $book->id,
+                'borrowed_at' => now(),
+                'due_date' => now()->addDays($loanDuration)->toDateString(),
+                'status' => 'active',
+                'extension_count' => 0
+            ]);
 
-    // Kurangi available_copies
-    $book->decrement('available_copies');
+            $book->decrement('available_copies');
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Buku berhasil dipinjam! Harap kembalikan dalam 14 hari.',
-        'borrowing' => $borrowing
-    ]);
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil! Durasi pinjam: {$loanDuration} hari ({$statusLabel})."
+            ]);
 
-} catch (\Exception $e) {
-    return response()->json([
-        'success' => false,
-        'message' => 'Terjadi kesalahan saat meminjam buku: ' . $e->getMessage()
-    ], 500);
-}
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // ==========================================
+    // ADMIN FEATURES (CREATE, EDIT, UPDATE, DELETE)
+    // ==========================================
+
+    // 1. Tampilkan Halaman Tambah Buku (CREATE)
+    public function create()
+    {
+        $categories = ['Fiction', 'Non-Fiction', 'Science', 'History', 'Biography', 'Technology', 'Children', 'Horror', 'Romance', 'Sports'];
+        return view('ReadSpace.create', compact('categories'));
+    }
+
+    // 2. Proses Simpan Buku Baru (STORE)
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'category' => 'required|string',
+            'description' => 'required|string',
+            'total_copies' => 'required|integer|min:1',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'isbn' => 'nullable|string',
+            'publisher' => 'nullable|string',
+            'published_year' => 'nullable|integer',
+            'language' => 'nullable|string',
+            'location' => 'nullable|string',
+        ]);
+
+        $data = $request->except(['cover_image', '_token']);
+
+        // Untuk buku baru, available copies = total copies
+        $data['available_copies'] = $request->total_copies;
+
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+        }
+
+        Book::create($data);
+
+        return redirect()->route('readspace')->with('success', 'New book added successfully!');
+    }
+
+    // 3. Tampilkan Halaman Edit (EDIT)
+    public function edit($id)
+    {
+        $book = Book::findOrFail($id);
+        $categories = ['Fiction', 'Non-Fiction', 'Science', 'History', 'Biography', 'Technology', 'Children', 'Horror', 'Romance', 'Sports'];
+
+        return view('ReadSpace.edit', compact('book', 'categories'));
+    }
+
+    // 4. Proses Update Data (UPDATE)
+    public function update(Request $request, $id)
+    {
+        $book = Book::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'category' => 'required|string',
+            'description' => 'required|string',
+            'total_copies' => 'required|integer|min:1',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $data = $request->except(['cover_image', '_token', '_method']);
+
+        // Logika update stok: Hitung dulu yang sedang dipinjam
+        $borrowedCount = $book->total_copies - $book->available_copies;
+        
+        // Stok tersedia baru = Total stok baru - jumlah yang dipinjam
+        $data['available_copies'] = $request->total_copies - $borrowedCount;
+
+        // Validasi agar stok tidak minus
+        if ($data['available_copies'] < 0) {
+            return back()->withErrors(['total_copies' => 'Total copies cannot be less than borrowed books (' . $borrowedCount . ').']);
+        }
+
+        if ($request->hasFile('cover_image')) {
+            if ($book->cover_image) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+        }
+
+        $book->update($data);
+
+        return redirect()->route('readspace')->with('success', 'Book updated successfully!');
+    }
+
+    // 5. Proses Delete Buku (DESTROY)
+    public function destroy($id)
+    {
+        $book = Book::findOrFail($id);
+
+        if ($book->cover_image) {
+            Storage::disk('public')->delete($book->cover_image);
+        }
+
+        $book->delete();
+
+        return response()->json(['success' => true, 'message' => 'Book deleted successfully']);
     }
 }

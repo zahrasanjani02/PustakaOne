@@ -376,7 +376,35 @@ document.addEventListener('click', function(event) {
 <!-- HERO SECTION -->
 <div class="hero-section">
     <div class="hero-content">
-        <div class="hero-icon">📚</div>
+        
+    @auth
+            @if(Auth::user()->isAdmin()) 
+                <div style="margin-bottom: 2rem;">
+                    <a href="{{ route('about.edit') }}" 
+                       style="
+                           background-color: #FFBA00; 
+                           color: #0C3B2E; 
+                           padding: 0.8rem 1.5rem; 
+                           border-radius: 50px; 
+                           text-decoration: none; 
+                           font-weight: 700; 
+                           font-size: 0.9rem;
+                           box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                           display: inline-flex;
+                           align-items: center;
+                           gap: 0.5rem;
+                           transition: transform 0.3s ease;
+                       "
+                       onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(255, 186, 0, 0.4)'"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)'"
+                    >
+                        ✏️ Edit Halaman Ini
+                    </a>
+                </div>
+            @endif
+        @endauth
+    
+    <div class="hero-icon">📚</div>
         <h1 class="hero-title">{{ $data['library_name'] }}</h1>
         <p class="hero-tagline">{{ $data['tagline'] }}</p>
         <p class="hero-description">{{ $data['short_description'] }}</p>
@@ -487,7 +515,7 @@ document.addEventListener('click', function(event) {
                         <a href="{{ route('reservation') }}" style="color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.opacity='1'; this.style.color='#FFBA00'" onmouseout="this.style.opacity='0.9'; this.style.color='white'">My Reservations</a>
                     </li>
                     <li style="margin-bottom: 0.8rem;">
-                        <a href="{{ route('membership') }}" style="color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.opacity='1'; this.style.color='#FFBA00'" onmouseout="this.style.opacity='0.9'; this.style.color='white'">Membership</a>
+                        <a href="{{ route('membership.index') }}" style="color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.opacity='1'; this.style.color='#FFBA00'" onmouseout="this.style.opacity='0.9'; this.style.color='white'">Membership</a>
                     </li>
                     @else
                     <li style="margin-bottom: 0.8rem;">

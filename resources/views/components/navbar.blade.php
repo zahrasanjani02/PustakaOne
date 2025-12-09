@@ -188,7 +188,7 @@
            FineDesk
         </a>
         
-        <a href="{{ route('membership') }}" 
+        <a href="{{ route('membership.index') }}" 
            style="text-decoration: none; 
                   color: {{ request()->routeIs('membership') ? '#FFBA00' : '#FFFFFF' }}; 
                   font-weight: {{ request()->routeIs('membership') ? '600' : '500' }}; 

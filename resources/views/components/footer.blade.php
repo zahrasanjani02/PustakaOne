@@ -36,7 +36,7 @@
                         <a href="{{ route('reservation') }}" style="color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.opacity='1'; this.style.color='#FFBA00'" onmouseout="this.style.opacity='0.9'; this.style.color='white'">My Reservations</a>
                     </li>
                     <li style="margin-bottom: 0.8rem;">
-                        <a href="{{ route('membership') }}" style="color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.opacity='1'; this.style.color='#FFBA00'" onmouseout="this.style.opacity='0.9'; this.style.color='white'">Membership</a>
+                        <a href="{{ route('membership.index') }}" style="color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.opacity='1'; this.style.color='#FFBA00'" onmouseout="this.style.opacity='0.9'; this.style.color='white'">Membership</a>
                     </li>
                     @else
                     <li style="margin-bottom: 0.8rem;">

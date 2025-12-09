@@ -510,7 +510,7 @@ document.addEventListener('click', function(event) {
 
         <!-- Tabs -->
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('unpaid')">⏳ Belum Dibayar ({{ $unpaidFines->total() }})</button>
+            <button class="tab-btn active" onclick="switchTab('unpaid')">⏳ Belum Dibayar ({{ $unpaidFines->total() + $activeFines->count() }})</button>
             <button class="tab-btn" onclick="switchTab('active')">⚠️ Overdue Aktif ({{ $activeFines->count() }})</button>
             <button class="tab-btn" onclick="switchTab('history')">✅ Riwayat ({{ $paymentHistory->count() }})</button>
         </div>
@@ -519,48 +519,89 @@ document.addEventListener('click', function(event) {
         <div id="unpaid" class="tab-content active">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">📋 Denda Belum Dibayar</div>
+                    <div class="card-title">📋 Semua Tagihan Denda (Belum Dibayar)</div>
                 </div>
-                @if($unpaidFines->count() > 0)
+                
+                {{-- Cek apakah ada data di ActiveFines ATAU UnpaidFines --}}
+                @if($activeFines->count() > 0 || $unpaidFines->count() > 0)
                 <div class="table-container">
                     <table>
-                        <tr>
-                            <th>Member</th>
-                            <th>Buku</th>
-                            <th>Due Date</th>
-                            <th>Returned</th>
-                            <th>Days Overdue</th>
-                            <th>Denda</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                        @foreach($unpaidFines as $fine)
-                        <tr>
-                            <td><strong>{{ $fine->user->name }}</strong><br><small>{{ $fine->user->email }}</small></td>
-                            <td><strong>{{ $fine->book->title }}</strong><br><small>by {{ $fine->book->author }}</small></td>
-                            <td>{{ $fine->due_date->format('d M Y') }}</td>
-                            <td>{{ $fine->actual_return_date ? $fine->actual_return_date->format('d M Y') : '-' }}</td>
-                            <td style="color: #E74C3C; font-weight: 600;">
-                                {{ $fine->actual_return_date ? $fine->actual_return_date->diffInDays($fine->due_date) : now()->diffInDays($fine->due_date) }} days
-                            </td>
-                            <td><strong style="color: #E74C3C;">Rp {{ number_format($fine->fine_amount) }}</strong></td>
-                            <td><span class="badge badge-unpaid">Unpaid</span></td>
-                            <td>
-                                <button class="btn-action btn-mark-paid" onclick="markPaid({{ $fine->id }}, '{{ $fine->user->name }}')">
-                                    ✓ Mark Paid
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Buku</th>
+                                <th>Due Date</th>
+                                <th>Status Buku</th>
+                                <th>Days Overdue</th>
+                                <th>Total Denda</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{-- 1. LOOPING DENDA BERJALAN (Active Overdue) --}}
+                            {{-- Ini yang belum dikembalikan bukunya --}}
+                            @foreach($activeFines as $fine)
+                            @php
+                                $daysOverdue = ceil(abs(now()->diffInDays($fine->due_date, false))); 
+                                $estimatedFine = $daysOverdue * 1000;
+                            @endphp
+                            <tr style="background-color: #ffffffff;"> 
+                                <td><strong>{{ $fine->user->name }}</strong><br><small>{{ $fine->user->email }}</small></td>
+                                <td><strong>{{ $fine->book->title }}</strong></td>
+                                <td>{{ $fine->due_date->format('d M Y') }}</td>
+                                
+                                {{-- Status Buku --}}
+                                <td><span class="badge" style="background: #FFF3CD; color: #856404;">Still Borrowed<span></td>
+                                
+                                <td style="color: #E74C3C; font-weight: 600;">{{ $daysOverdue }} days</td>
+                                <td><strong style="color: #E74C3C;">Rp {{ number_format($estimatedFine) }}</strong></td>
+                                <td>
+                                    {{-- Tombol Bayar --}}
+                                    <button class="btn-action btn-mark-paid" onclick="markPaid({{ $fine->id }}, '{{ $fine->user->name }}')">
+                                        ✓ Mark Paid
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+
+                            {{-- 2. LOOPING DENDA FINAL (Unpaid Closed) --}}
+                            {{-- Ini yang sudah dikembalikan --}}
+                            @foreach($unpaidFines as $fine)
+                            <tr>
+                                <td><strong>{{ $fine->user->name }}</strong><br><small>{{ $fine->user->email }}</small></td>
+                                <td><strong>{{ $fine->book->title }}</strong><br><small>by {{ $fine->book->author }}</small></td>
+                                <td>{{ $fine->due_date->format('d M Y') }}</td>
+                                
+                                {{-- Status Buku --}}
+                                <td><span class="badge" style="background: #E8F8F5; color: #117864;">Dikembalikan</span></td>
+                                
+                                <td style="color: #E74C3C; font-weight: 600;">
+                                    {{ $fine->actual_return_date ? \Carbon\Carbon::parse($fine->actual_return_date)->diffInDays($fine->due_date) : 0 }} days
+                                </td>
+                                <td><strong style="color: #E74C3C;">Rp {{ number_format($fine->fine_amount) }}</strong></td>
+                                <td><span class="badge badge-unpaid">Unpaid</span></td>
+                                <td>
+                                    {{-- Tombol Bayar --}}
+                                    <button class="btn-action btn-mark-paid" onclick="markPaid({{ $fine->id }}, '{{ $fine->user->name }}')">
+                                        ✓ Mark Paid
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
+                
+                {{-- Pagination --}}
                 <div style="margin-top: 1.5rem;">
                     {{ $unpaidFines->links() }}
                 </div>
+
                 @else
+                {{-- Empty State --}}
                 <div class="empty-state">
                     <div class="empty-state-icon">✅</div>
-                    <div class="empty-state-text">No unpaid fines. Great!</div>
+                    <div class="empty-state-text">Tidak ada tagihan denda. Semua aman!</div>
                 </div>
                 @endif
             </div>
@@ -585,7 +626,8 @@ document.addEventListener('click', function(event) {
                         </tr>
                         @foreach($activeFines as $fine)
                         @php
-                            $daysOverdue = now()->diffInDays($fine->due_date);
+                            // Tambahkan ceil() dan abs() agar bulat dan positif
+                            $daysOverdue = ceil(abs(now()->diffInDays($fine->due_date, false))); 
                             $estimatedFine = $daysOverdue * 1000;
                         @endphp
                         <tr>
@@ -648,7 +690,7 @@ document.addEventListener('click', function(event) {
             </div>
         </div>
 
-    @else
+@else
         {{-- ========== MEMBER VIEW ========== --}}
         
         <div class="page-header">
@@ -656,7 +698,7 @@ document.addEventListener('click', function(event) {
             <p class="page-subtitle">Kelola denda peminjaman buku Anda</p>
         </div>
 
-        @if($myUnpaidFines->count() > 0)
+        @if($myUnpaidFines->count() > 0 || $myActiveFines->count() > 0)
         <div class="alert-box">
             <div class="alert-box-title">⚠️ Anda Memiliki Denda yang Belum Dibayar</div>
             <div class="alert-box-text">
@@ -696,20 +738,64 @@ document.addEventListener('click', function(event) {
 
         <!-- Tabs -->
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('myunpaid')">⏳ Belum Dibayar ({{ $myUnpaidFines->count() }})</button>
-            <button class="tab-btn" onclick="switchTab('myactive')">⚠️ Overdue Aktif ({{ $myActiveFines->count() }})</button>
-            <button class="tab-btn" onclick="switchTab('mypaid')">✅ Sudah Dibayar ({{ $myPaidFines->count() }})</button>
+            <button class="tab-btn active" onclick="switchTab('myunpaid')">
+                ⏳ Belum Dibayar ({{ $myUnpaidFines->count() + $myActiveFines->count() }})
+            </button>
+            
+            <button class="tab-btn" onclick="switchTab('myactive')">
+                ⚠️ Overdue Aktif ({{ $myActiveFines->count() }})
+            </button>
+            
+            <button class="tab-btn" onclick="switchTab('mypaid')">
+                ✅ Sudah Dibayar ({{ $myPaidFines->count() }})
+            </button>
         </div>
 
         <!-- TAB: MY UNPAID -->
         <div id="myunpaid" class="tab-content active">
-            @if($myUnpaidFines->count() > 0)
+            @if($myUnpaidFines->count() > 0 || $myActiveFines->count() > 0)
             <div class="fines-grid">
+                
+                {{-- 1. Active Overdue (Running Fine) --}}
+                @foreach($myActiveFines as $fine)
+                @php
+                    // PERBAIKAN DISINI: Pakai ceil dan abs agar bulat positif
+                    $daysOverdue = ceil(abs(now()->diffInDays($fine->due_date, false))); 
+                    $estimatedFine = $daysOverdue * 1000;
+                @endphp
+                <div class="fine-card active" style="border-left-color: #F39C12; background: #FFFDE7;">
+                    <div class="fine-card-header">
+                        <div class="fine-card-title">{{ $fine->book->title }}</div>
+                        <div class="fine-card-author">by {{ $fine->book->author }}</div>
+                        <span class="badge" style="background: #FFF3CD; color: #856404; margin-top: 5px;">Masih Dipinjam</span>
+                    </div>
+                    <div class="fine-card-body">
+                        <div class="fine-detail-item">
+                            <span class="fine-detail-label">Due Date:</span>
+                            <span class="fine-detail-value">{{ $fine->due_date->format('d M Y') }}</span>
+                        </div>
+                        <div class="fine-detail-item">
+                            <span class="fine-detail-label">Days Overdue:</span>
+                            <span class="fine-detail-value overdue">{{ $daysOverdue }} days</span>
+                        </div>
+                        <div class="fine-amount-box">
+                            <div class="fine-amount-label">Estimasi Denda Berjalan</div>
+                            <div class="fine-amount-value">Rp {{ number_format($estimatedFine) }}</div>
+                        </div>
+                        <div style="margin-top: 1rem; text-align: center; color: #E74C3C; font-size: 0.85rem;">
+                            ⚠️ Harap segera memproses pembayaran denda.
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+
+                {{-- 2. Closed Unpaid (Fixed Fine) --}}
                 @foreach($myUnpaidFines as $fine)
                 <div class="fine-card unpaid">
                     <div class="fine-card-header">
                         <div class="fine-card-title">{{ $fine->book->title }}</div>
                         <div class="fine-card-author">by {{ $fine->book->author }}</div>
+                        <span class="badge" style="background: #E8F8F5; color: #117864; margin-top: 5px;">Sudah Dikembalikan</span>
                     </div>
                     <div class="fine-card-body">
                         <div class="fine-detail-item">
@@ -718,15 +804,21 @@ document.addEventListener('click', function(event) {
                         </div>
                         <div class="fine-detail-item">
                             <span class="fine-detail-label">Returned:</span>
-                            <span class="fine-detail-value">{{ $fine->actual_return_date->format('d M Y') }}</span>
+                            <span class="fine-detail-value">{{ $fine->actual_return_date ? \Carbon\Carbon::parse($fine->actual_return_date)->format('d M Y') : '-' }}</span>
                         </div>
                         <div class="fine-detail-item">
                             <span class="fine-detail-label">Days Overdue:</span>
-                            <span class="fine-detail-value overdue">{{ $fine->actual_return_date->diffInDays($fine->due_date) }} days</span>
+                            <span class="fine-detail-value overdue">
+                                {{-- Hitung overdue dari tanggal kembali vs due date --}}
+                                {{ $fine->actual_return_date ? ceil(abs(\Carbon\Carbon::parse($fine->actual_return_date)->diffInDays($fine->due_date, false))) : 0 }} days
+                            </span>
                         </div>
                         <div class="fine-amount-box">
-                            <div class="fine-amount-label">Jumlah Denda</div>
+                            <div class="fine-amount-label">Total Tagihan Denda</div>
                             <div class="fine-amount-value">Rp {{ number_format($fine->fine_amount) }}</div>
+                        </div>
+                        <div style="margin-top: 1rem; text-align: center; color: #666; font-size: 0.85rem;">
+                            Silakan bayar di meja administrasi.
                         </div>
                     </div>
                 </div>
@@ -736,7 +828,7 @@ document.addEventListener('click', function(event) {
             <div class="card">
                 <div class="empty-state">
                     <div class="empty-state-icon">✅</div>
-                    <div class="empty-state-text">Tidak ada denda yang belum dibayar</div>
+                    <div class="empty-state-text">Tidak ada denda yang belum dibayar. Bagus!</div>
                 </div>
             </div>
             @endif
@@ -748,7 +840,8 @@ document.addEventListener('click', function(event) {
             <div class="fines-grid">
                 @foreach($myActiveFines as $fine)
                 @php
-                    $daysOverdue = now()->diffInDays($fine->due_date);
+                    // PERBAIKAN DISINI JUGA:
+                    $daysOverdue = ceil(abs(now()->diffInDays($fine->due_date, false))); 
                     $estimatedFine = $daysOverdue * 1000;
                 @endphp
                 <div class="fine-card active">
@@ -774,7 +867,7 @@ document.addEventListener('click', function(event) {
                             <div class="fine-amount-value">Rp {{ number_format($estimatedFine) }}</div>
                         </div>
                         <div style="margin-top: 1rem; padding: 0.75rem; background: #FFF3CD; border-radius: 6px; text-align: center; font-size: 0.85rem; color: #856404;">
-                            ⚠️ Harap segera kembalikan buku ini
+                            ⚠️ Harap segera memproses pembayaran denda.
                         </div>
                     </div>
                 </div>
@@ -807,11 +900,13 @@ document.addEventListener('click', function(event) {
                         </div>
                         <div class="fine-detail-item">
                             <span class="fine-detail-label">Returned:</span>
-                            <span class="fine-detail-value">{{ $fine->actual_return_date->format('d M Y') }}</span>
+                            <span class="fine-detail-value">{{ $fine->actual_return_date ? \Carbon\Carbon::parse($fine->actual_return_date)->format('d M Y') : '-' }}</span>
                         </div>
                         <div class="fine-detail-item">
                             <span class="fine-detail-label">Days Overdue:</span>
-                            <span class="fine-detail-value">{{ $fine->actual_return_date->diffInDays($fine->due_date) }} days</span>
+                            <span class="fine-detail-value">
+                                {{ $fine->actual_return_date ? ceil(abs(\Carbon\Carbon::parse($fine->actual_return_date)->diffInDays($fine->due_date, false))) : 0 }} days
+                            </span>
                         </div>
                         <div class="fine-paid-box">
                             <div class="fine-paid-label">✓ Denda Telah Dibayar</div>

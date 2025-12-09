@@ -539,7 +539,7 @@
                         <tbody>
                             @foreach($overdueBorrowings as $borrowing)
                             @php
-                                $daysOverdue = now()->diffInDays($borrowing->due_date);
+                                $daysOverdue = ceil(abs(now()->diffInDays($borrowing->due_date, false)));
                                 $fine = $daysOverdue * 1000;
                             @endphp
                             <tr>
@@ -610,7 +610,7 @@
                     <div class="action-icon">📚</div>
                     <div class="action-label">Manage Books</div>
                 </a>
-                <a href="{{ route('membership') }}" class="action-btn">
+                <a href="{{ route('membership.index') }}" class="action-btn">
                     <div class="action-icon">👥</div>
                     <div class="action-label">Manage Members</div>
                 </a>
@@ -710,8 +710,11 @@
             <div class="borrowing-grid">
                 @foreach($myBorrowings as $borrowing)
                 @php
-                    $daysLeft = now()->diffInDays($borrowing->due_date, false);
-                    $isOverdue = $daysLeft < 0;
+                    $rawDays = now()->diffInDays($borrowing->due_date, false);
+                    $isOverdue = $rawDays < 0;
+                    
+                    // Tampilkan angka bulat positif
+                    $daysDisplay = ceil(abs($rawDays));
                 @endphp
                 <div class="borrowing-card {{ $isOverdue ? 'overdue' : '' }}">
                     <div class="borrowing-book-title">{{ $borrowing->book->title }}</div>
@@ -719,9 +722,9 @@
                     <div class="borrowing-detail">⏰ Due Date: {{ $borrowing->due_date->format('d M Y') }}</div>
                     <div class="borrowing-detail">
                         @if($isOverdue)
-                            <span class="days-left overdue">⚠️ Overdue by {{ abs($daysLeft) }} days</span>
+                            <span class="days-left overdue">⚠️ Overdue by {{ $daysDisplay }} days</span>
                         @else
-                            <span class="days-left">✓ {{ $daysLeft }} days left</span>
+                            <span class="days-left">✓ {{ $daysDisplay }} days left</span>
                         @endif
                     </div>
                 </div>
@@ -730,39 +733,56 @@
         </div>
         @endif
 
-        <!-- My Favorite Books  -->
-<div class="card">
-    <div class="card-header">
-        <div class="card-title">❤️ My Favorite Books</div>
-        <a href="{{ route('favorites') }}" class="btn-small">View All</a>
-    </div>
-    
-    @if(isset($myFavorites) && $myFavorites->count() > 0)
-        <!-- Has Favorites -->
-        <div class="books-grid">
-            @foreach($myFavorites as $favorite)
-            <div class="book-card-small" onclick="window.location='{{ route('readspace') }}'">
-                <div class="book-cover-small" style="position: relative;">
-                    📖
-                    <span style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1.5rem;">⭐</span>
-                </div>
-                <div class="book-info-small">
-                    <div class="book-title-small">{{ $favorite->book->title }}</div>
-                    <div class="book-author-small">{{ $favorite->book->author }}</div>
-                </div>
+ <!-- My Favorite Books -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">❤️ My Favorite Books</div>
+                <a href="{{ route('favorites') }}" class="btn-small">View All</a>
             </div>
-            @endforeach
+            
+            @if(isset($myFavorites) && $myFavorites->count() > 0)
+                <!-- Has Favorites -->
+                <div class="books-grid">
+                    @foreach($myFavorites as $favorite)
+                    <div class="book-card-small" onclick="window.location='{{ route('readspace.show', $favorite->book->id) }}'" style="cursor: pointer;">
+                        
+                        {{-- PERBAIKAN TAMPILAN COVER --}}
+                        <div class="book-cover-small" style="position: relative; overflow: hidden;">
+                            @if($favorite->book->cover_image)
+                                {{-- Jika ada gambar cover, tampilkan --}}
+                                <img src="{{ asset('storage/' . $favorite->book->cover_image) }}" 
+                                     alt="{{ $favorite->book->title }}" 
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                {{-- Jika tidak ada, tampilkan Emoji/Icon default --}}
+                                <div style="font-size: 3rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: linear-gradient(135deg, #0C3B2E, #6D9773);">
+                                    {{ $favorite->book->getCategoryEmoji() ?? '📖' }}
+                                </div>
+                            @endif
+
+                            {{-- Icon Bintang Pojok Kanan --}}
+                            <span style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1.5rem; text-shadow: 0 2px 5px rgba(0,0,0,0.3);">⭐</span>
+                        </div>
+
+                        <div class="book-info-small">
+                            <div class="book-title-small" title="{{ $favorite->book->title }}">
+                                {{ $favorite->book->title }}
+                            </div>
+                            <div class="book-author-small">{{ $favorite->book->author }}</div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <!-- Empty State -->
+                <div style="text-align: center; padding: 3rem 2rem; color: #666;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">❤️</div>
+                    <h3 style="font-size: 1.2rem; color: #0C3B2E; margin-bottom: 0.5rem;">No Favorite Books Yet</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Start adding books to your favorites!</p>
+                    <a href="{{ route('readspace') }}" style="display: inline-block; background: linear-gradient(135deg, #BB8A52, #FFBA00); color: white; padding: 0.7rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Browse Books</a>
+                </div>
+            @endif
         </div>
-    @else
-        <!-- Empty State -->
-        <div style="text-align: center; padding: 3rem 2rem; color: #666;">
-            <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;">❤️</div>
-            <h3 style="font-size: 1.2rem; color: #0C3B2E; margin-bottom: 0.5rem;">No Favorite Books Yet</h3>
-            <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Start adding books to your favorites!</p>
-            <a href="{{ route('readspace') }}" style="display: inline-block; background: linear-gradient(135deg, #BB8A52, #FFBA00); color: white; padding: 0.7rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Browse Books</a>
-        </div>
-    @endif
-</div>
 
 
         <!-- Browse Books -->
@@ -774,10 +794,22 @@
             </div>
             <div class="books-grid">
                 @foreach($popularBooks as $book)
-                <div class="book-card-small" onclick="window.location='{{ route('readspace') }}'">
-                    <div class="book-cover-small">📖</div>
+                <div class="book-card-small" onclick="window.location='{{ route('readspace.show', $book->id) }}'" style="cursor: pointer;">
+                    
+                    {{-- BAGIAN COVER (PERBAIKAN DISINI) --}}
+                    <div class="book-cover-small" style="overflow: hidden; position: relative;">
+                        @if($book->cover_image)
+                            <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            {{-- Tampilkan Emoji/Icon jika tidak ada gambar --}}
+                            <div style="font-size: 3rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: linear-gradient(135deg, #0C3B2E, #6D9773);">
+                                {{ $book->getCategoryEmoji() ?? '📖' }}
+                            </div>
+                        @endif
+                    </div>
+
                     <div class="book-info-small">
-                        <div class="book-title-small">{{ $book->title }}</div>
+                        <div class="book-title-small" title="{{ $book->title }}">{{ $book->title }}</div>
                         <div class="book-author-small">{{ $book->author }}</div>
                     </div>
                 </div>
@@ -804,7 +836,7 @@
                     <div class="action-icon">💰</div>
                     <div class="action-label">My Fines</div>
                 </a>
-                <a href="{{ route('membership') }}" class="action-btn">
+                <a href="{{ route('membership.index') }}" class="action-btn">
                     <div class="action-icon">👤</div>
                     <div class="action-label">My Membership</div>
                 </a>

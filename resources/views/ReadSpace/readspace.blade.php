@@ -166,10 +166,11 @@
     }
 
     .book-cover img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block;    
+        }
 
     .book-info {
         padding: 1.5rem;
@@ -509,9 +510,9 @@ document.addEventListener('click', function(event) {
                 <div class="content-header">
                     <h1 class="content-title">Book Management</h1>
                     <div class="header-actions">
-                        <button class="btn-add-book" onclick="alert('Add Book Modal - Coming Soon!')">
+                        <a href="{{ route('readspace.create') }}" class="btn-add-book" style="text-decoration: none;">
                             ➕ Add New Book
-                        </button>
+                        </a>
                         <form action="{{ route('readspace') }}" method="GET" style="display: inline;">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <select name="category" class="filter-dropdown" onchange="this.form.submit()">
@@ -542,7 +543,7 @@ document.addEventListener('click', function(event) {
                             
                             <div class="book-meta">
                                 <span class="book-category">{{ $book->category ?? 'General' }}</span>
-                                <span class="book-stock {{ $book->available_copies > 3 ? 'available' : ($book->available_copies > 0 ? 'limited' : 'unavailable') }}">
+                                <span class="book-stock {{ $book->available_copies > ceil($book->total_copies / 3) ? 'available' : ($book->available_copies > 0 ? 'limited' : 'unavailable') }}">
                                     Stock: {{ $book->available_copies }}/{{ $book->total_copies }}
                                 </span>
                             </div>
@@ -552,7 +553,9 @@ document.addEventListener('click', function(event) {
                             <div class="book-actions">
                                 <div class="admin-book-actions">
                                     <a href="{{ route('readspace.show', $book->id) }}" class="btn-read-more" style="flex: none; padding: 0.5rem 1rem; border-radius: 6px;">View</a>
-                                    <button class="btn-edit" onclick="editBook({{ $book->id }})">✏️ Edit</button>
+                                    <a href="{{ route('readspace.edit', $book->id) }}" class="btn-edit" style="text-decoration: none; display: inline-block; text-align: center;">
+                                        ✏️ Edit
+                                    </a>
                                     <button class="btn-delete" onclick="deleteBook({{ $book->id }}, '{{ $book->title }}')">🗑️ Delete</button>
                                 </div>
                             </div>

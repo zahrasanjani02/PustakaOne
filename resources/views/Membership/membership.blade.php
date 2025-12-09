@@ -2,6 +2,7 @@
 
 @section('content')
 <style>
+    /* ===== GLOBAL ===== */
     * {
         margin: 0;
         padding: 0;
@@ -126,7 +127,7 @@
         color: #EF4444;
     }
 
-    /* ===== MEMBER PROFILE CARD ===== */
+    /* ===== MEMBER PROFILE ===== */
     .profile-container {
         display: grid;
         grid-template-columns: 2fr 1fr;
@@ -250,25 +251,7 @@
         color: #0C3B2E;
     }
 
-    .btn-renew {
-        width: 100%;
-        background: linear-gradient(135deg, #BB8A52, #FFBA00);
-        color: white;
-        border: none;
-        padding: 0.9rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .btn-renew:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(187, 138, 82, 0.3);
-    }
-
-    /* ===== TABLE (ADMIN) ===== */
+    /* ===== TABLE STYLES ===== */
     .table-container {
         background: white;
         border-radius: 12px;
@@ -299,13 +282,19 @@
         background: #F8F9FA;
     }
 
+    /* Header Table Center */
     th {
         padding: 1rem 1.5rem;
-        text-align: left;
+        text-align: center;
         font-size: 0.85rem;
         font-weight: 700;
         color: #0C3B2E;
         text-transform: uppercase;
+    }
+
+    /* Kecuali kolom pertama (Member) rata kiri */
+    th:first-child {
+        text-align: left;
     }
 
     td {
@@ -316,6 +305,11 @@
 
     tbody tr:hover {
         background: #F8F9FA;
+    }
+
+    /* Class Helper untuk Center Content */
+    .text-center {
+        text-align: center;
     }
 
     .member-info {
@@ -374,34 +368,75 @@
         color: #F59E0B;
     }
 
-    .action-buttons {
-        display: flex;
+    /* ===== BUTTON STYLES ===== */
+    .btn-add-member {
+        background: linear-gradient(135deg, #6D9773, #0C3B2E);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
         gap: 0.5rem;
     }
 
-    .btn-icon {
-        width: 35px;
-        height: 35px;
-        border: none;
-        border-radius: 8px;
+    .btn-add-member:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(12, 59, 46, 0.3);
+    }
+
+    .action-group {
         display: flex;
-        align-items: center;
         justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-direct-edit {
+        background-color: #E3F2FD;
+        color: #1976D2;
+        border: 1px solid #BBDEFB;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-direct-edit:hover {
+        background-color: #BBDEFB;
+    }
+
+    .btn-direct-delete {
+        background-color: #FFEBEE;
+        color: #D32F2F;
+        border: 1px solid #FFCDD2;
+        padding: 6px 12px;
+        border-radius: 6px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: 'Poppins', sans-serif;
     }
 
-    .btn-icon.view {
-        background: rgba(109, 151, 115, 0.1);
-        color: #6D9773;
+    .btn-direct-delete:hover {
+        background-color: #FFCDD2;
     }
 
-    .btn-icon.view:hover {
-        background: #6D9773;
-        color: white;
-    }
-
-    /* ===== BENEFITS SECTION (MEMBER) ===== */
+    /* ===== BENEFITS (MEMBER) ===== */
     .benefits-section {
         background: white;
         border-radius: 12px;
@@ -447,40 +482,31 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
-        .profile-container {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-header {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .profile-detail-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .stats-container {
-            grid-template-columns: 1fr;
-        }
-
+        .profile-container,
+        .stats-container,
         .benefits-grid {
             grid-template-columns: 1fr;
+        }
+
+        .edit-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
         }
 
         table {
             font-size: 0.85rem;
         }
 
-        td, th {
+        td,
+        th {
             padding: 0.75rem 0.5rem;
         }
     }
 </style>
 
-<!-- NAVBAR  -->
+<!-- NAVBAR -->
 <x-navbar/>
-
 
 <script>
 function toggleUserMenu() {
@@ -545,10 +571,12 @@ document.addEventListener('click', function(event) {
             </div>
         </div>
 
-        <!-- Members Table -->
         <div class="table-container">
             <div class="table-header">
                 <h2 class="table-title">Members List</h2>
+                <a href="{{ route('membership.create') }}" class="btn-add-member">
+                    + Add New Member
+                </a>
             </div>
 
             <table>
@@ -575,11 +603,11 @@ document.addEventListener('click', function(event) {
                                 </div>
                             </div>
                         </td>
-                        <td>{{ $member->phone ?? '-' }}</td>
-                        <td>{{ $member->membership_start ? $member->membership_start->format('d M Y') : '-' }}</td>
-                        <td>{{ $member->membership_end ? $member->membership_end->format('d M Y') : '-' }}</td>
-                        <td><strong>{{ $member->borrowings_count }}</strong> books</td>
-                        <td>
+                        <td class="text-center">{{ $member->phone ?? '-' }}</td>
+                        <td class="text-center">{{ $member->membership_start ? \Carbon\Carbon::parse($member->membership_start)->format('d M Y') : '-'}}</td>
+                        <td class="text-center">{{ $member->membership_end ? \Carbon\Carbon::parse($member->membership_end)->format('d M Y') : '-' }}</td>
+                        <td class="text-center"><strong>{{ $member->borrowings_count }}</strong> books</td>
+                        <td class="text-center">
                             @if($member->membership_end && $member->membership_end >= now())
                                 @if($member->membership_end <= now()->addDays(30))
                                     <span class="status-badge expiring">Expiring Soon</span>
@@ -590,9 +618,21 @@ document.addEventListener('click', function(event) {
                                 <span class="status-badge inactive">Inactive</span>
                             @endif
                         </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-icon view" title="View Details">👁️</button>
+                        
+                        {{-- TOMBOL EDIT & DELETE (LANGSUNG) --}}
+                        <td class="text-center">
+                            <div class="action-group">
+                                <a href="{{ route('membership.edit', $member->id) }}" class="btn-direct-edit" title="Edit Member">
+                                    ✏️ Edit
+                                </a>
+                                
+                                <form action="{{ route('membership.destroy', $member->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus member {{ $member->name }}? Ini tidak dapat dibatalkan.');" style="margin:0;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-direct-delete" title="Delete Member">
+                                        🗑️ Delete
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -619,7 +659,7 @@ document.addEventListener('click', function(event) {
                     <div class="profile-avatar-large">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
                     <div class="profile-info-section">
                         <h2>{{ auth()->user()->name }}</h2>
-                        <div class="profile-role-badge">📖 Member</div>
+                        <div class="profile-role-badge">📖 Premium</div>
                     </div>
                 </div>
 
@@ -648,7 +688,7 @@ document.addEventListener('click', function(event) {
                 <div class="membership-status-content">
                     @if(auth()->user()->membership_end && auth()->user()->membership_end >= now())
                         @php
-                            $daysLeft = now()->diffInDays(auth()->user()->membership_end, false);
+                            $daysLeft = intval(ceil(now()->floatDiffInDays(auth()->user()->membership_end, false)));
                         @endphp
                         <div class="membership-days-left">{{ $daysLeft }}</div>
                         <div class="membership-days-label">Days Remaining</div>
@@ -672,7 +712,10 @@ document.addEventListener('click', function(event) {
                         </div>
                     @endif
 
-                    <button class="btn-renew" onclick="alert('Contact librarian to renew membership')">🔄 Renew Membership</button>
+                    <a href="{{ route('membership.renew') }}" 
+                    style="display: block; width: 100%; text-align: center; background: linear-gradient(135deg, #BB8A52, #FFBA00); color: white; padding: 0.8rem; border-radius: 8px; font-weight: 700; text-decoration: none; border: none; transition: 0.3s;">
+                        🔄 Renew Membership
+                    </a>
                 </div>
             </div>
         </div>

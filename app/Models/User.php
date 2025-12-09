@@ -13,9 +13,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // admin atau user
+        'role',
         'phone',
         'address',
+        'membership_start',
+        'membership_end', 
     ];
 
     protected $hidden = [
@@ -28,6 +30,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'membership_start' => 'date', 
+            'membership_end' => 'date',  
         ];
     }
 
@@ -50,8 +54,8 @@ class User extends Authenticatable
     }
 
     // Check apakah user adalah member biasa
-    public function isUser()
+    public function isMember()
     {
-        return $this->role === 'user';
+        return $this->role === 'member';
     }
 }
